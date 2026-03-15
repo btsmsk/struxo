@@ -1,0 +1,26 @@
+*.iml
+.gradle
+**/build/
+local.properties
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+
+# iOS
+iosApp/Pods/
+iosApp/*.xcworkspace
+iosApp/*.xcodeproj/xcuserdata
+iosApp/*.xcodeproj/project.xcworkspace/xcshareddata
+**/*.xcodeproj/**/xcuserdata/
+
+# Kotlin
+*.kotlin_module
+.kotlin
+
+# KSP
+**/ksp/
+
+# Room schemas (keep tracked)
+!**/schemas/
