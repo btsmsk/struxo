@@ -45,4 +45,12 @@ interface AuthRepository {
      * Checks whether a user is currently authenticated (tokens exist).
      */
     suspend fun isLoggedIn(): Boolean
+
+    /**
+     * Sends a password reset email.
+     *
+     * @param email User's email address.
+     * @throws Exception on network or server error.
+     */
+    suspend fun resetPassword(email: String)
 }

@@ -1,38 +1,59 @@
 package com.struxo.kit.feature.auth.data.repository
 
 import com.struxo.kit.core.data.network.TokenProvider
-import com.struxo.kit.feature.auth.data.dto.LoginRequestDto
 import com.struxo.kit.feature.auth.data.local.AuthLocalSource
 import com.struxo.kit.feature.auth.data.mapper.toDomain
 import com.struxo.kit.feature.auth.data.mapper.toEntity
-import com.struxo.kit.feature.auth.data.remote.AuthApi
 import com.struxo.kit.feature.auth.domain.model.AuthUser
 import com.struxo.kit.feature.auth.domain.repository.AuthRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 
 /**
- * [AuthRepository] implementation coordinating remote API and local cache.
+ * Fake [AuthRepository] that returns dummy data without a real backend.
  *
- * @param authApi Remote auth endpoints.
+ * Persists user and tokens via [localSource] and [tokenProvider] so that
+ * login state survives app restarts.
+ *
+ * Swap this in [com.struxo.kit.di.authModule] for demo/development.
+ * Replace with [AuthRepositoryImpl] when a real API is available.
+ *
  * @param localSource Local user cache.
  * @param tokenProvider Secure token storage.
  */
-class AuthRepositoryImpl(
-    private val authApi: AuthApi,
+class FakeAuthRepository(
     private val localSource: AuthLocalSource,
     private val tokenProvider: TokenProvider,
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String): AuthUser {
-        val response = authApi.login(LoginRequestDto(email, password))
-        val user = response.toDomain()
+        delay(1000) // simulate network latency
+        val user = AuthUser(
+            id = "demo-user-1",
+            email = email,
+            name = email.substringBefore("@"),
+            avatarUrl = null,
+            accessToken = "fake-access-token",
+            refreshToken = "fake-refresh-token",
+        )
         tokenProvider.saveTokens(user.accessToken, user.refreshToken)
         localSource.saveUser(user.toEntity())
         return user
     }
 
     override suspend fun register(email: String, password: String, name: String): AuthUser {
-        TODO("Register endpoint will be added when the backend provides it")
+        delay(1000)
+        val user = AuthUser(
+            id = "demo-user-2",
+            email = email,
+            name = name,
+            avatarUrl = null,
+            accessToken = "fake-access-token",
+            refreshToken = "fake-refresh-token",
+        )
+        tokenProvider.saveTokens(user.accessToken, user.refreshToken)
+        localSource.saveUser(user.toEntity())
+        return user
     }
 
     override suspend fun logout() {
@@ -50,6 +71,6 @@ class AuthRepositoryImpl(
         tokenProvider.getTokens() != null
 
     override suspend fun resetPassword(email: String) {
-        TODO("Reset password endpoint will be added when the backend provides it")
+        delay(1000) // simulate network latency
     }
 }

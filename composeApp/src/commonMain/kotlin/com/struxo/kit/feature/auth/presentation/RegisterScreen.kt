@@ -32,19 +32,17 @@ import com.struxo.kit.core.presentation.components.LoadingButton
 import com.struxo.kit.core.presentation.theme.Spacing
 
 /**
- * Stateful login screen that collects ViewModel state and effects.
+ * Stateful registration screen that collects ViewModel state and effects.
  *
- * @param viewModel Login ViewModel instance.
- * @param onNavigateToHome Called after successful login.
- * @param onNavigateToRegister Called when the user taps "Register".
- * @param onNavigateToForgotPassword Called when the user taps "Forgot password?".
+ * @param viewModel Register ViewModel instance.
+ * @param onNavigateToHome Called after successful registration.
+ * @param onNavigateToLogin Called when the user taps "Sign In".
  */
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel,
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
     onNavigateToHome: () -> Unit,
-    onNavigateToRegister: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -52,10 +50,9 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is LoginEffect.NavigateToHome -> onNavigateToHome()
-                is LoginEffect.NavigateToRegister -> onNavigateToRegister()
-                is LoginEffect.NavigateToForgotPassword -> onNavigateToForgotPassword()
-                is LoginEffect.ShowError -> snackbarHostState.showSnackbar(effect.message)
+                is RegisterEffect.NavigateToHome -> onNavigateToHome()
+                is RegisterEffect.NavigateToLogin -> onNavigateToLogin()
+                is RegisterEffect.ShowError -> snackbarHostState.showSnackbar(effect.message)
             }
         }
     }
@@ -63,7 +60,7 @@ fun LoginScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        LoginContent(
+        RegisterContent(
             state = state,
             onEvent = viewModel::onEvent,
             modifier = Modifier.padding(padding),
@@ -72,16 +69,16 @@ fun LoginScreen(
 }
 
 /**
- * Stateless login content — previewable and testable in isolation.
+ * Stateless registration content — previewable and testable in isolation.
  *
- * @param state Current [LoginState].
+ * @param state Current [RegisterState].
  * @param onEvent Callback for user actions.
  * @param modifier Optional [Modifier].
  */
 @Composable
-fun LoginContent(
-    state: LoginState,
-    onEvent: (LoginEvent) -> Unit,
+fun RegisterContent(
+    state: RegisterState,
+    onEvent: (RegisterEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -95,23 +92,39 @@ fun LoginContent(
     ) {
         // Title
         Text(
-            text = "Welcome to Struxo",
+            text = "Create Account",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(Modifier.height(Spacing.sm))
         Text(
-            text = "Sign in to continue",
+            text = "Sign up to get started",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(Modifier.height(Spacing.xxl))
 
+        // Name field
+        AppTextField(
+            value = state.name,
+            onValueChange = { onEvent(RegisterEvent.NameChanged(it)) },
+            label = "Name",
+            error = state.nameError,
+            placeholder = "Your name",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(Modifier.height(Spacing.md))
+
         // Email field
         AppTextField(
             value = state.email,
-            onValueChange = { onEvent(LoginEvent.EmailChanged(it)) },
+            onValueChange = { onEvent(RegisterEvent.EmailChanged(it)) },
             label = "Email",
             error = state.emailError,
             placeholder = "you@example.com",
@@ -127,7 +140,7 @@ fun LoginContent(
         // Password field
         AppTextField(
             value = state.password,
-            onValueChange = { onEvent(LoginEvent.PasswordChanged(it)) },
+            onValueChange = { onEvent(RegisterEvent.PasswordChanged(it)) },
             label = "Password",
             error = state.passwordError,
             visualTransformation = PasswordVisualTransformation(),
@@ -138,26 +151,18 @@ fun LoginContent(
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    onEvent(LoginEvent.LoginClicked)
+                    onEvent(RegisterEvent.RegisterClicked)
                 },
             ),
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // Forgot password
-        TextButton(
-            onClick = { onEvent(LoginEvent.ForgotPasswordClicked) },
-            modifier = Modifier.align(Alignment.End),
-        ) {
-            Text("Forgot password?")
-        }
+        Spacer(Modifier.height(Spacing.xl))
 
-        Spacer(Modifier.height(Spacing.lg))
-
-        // Login button
+        // Register button
         LoadingButton(
-            text = "Sign In",
-            onClick = { onEvent(LoginEvent.LoginClicked) },
+            text = "Create Account",
+            onClick = { onEvent(RegisterEvent.RegisterClicked) },
             isLoading = state.isLoading,
             enabled = !state.isLoading,
             modifier = Modifier.fillMaxWidth(),
@@ -165,15 +170,15 @@ fun LoginContent(
 
         Spacer(Modifier.height(Spacing.xl))
 
-        // Register link
+        // Login link
         Text(
-            text = "Don't have an account?",
+            text = "Already have an account?",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        TextButton(onClick = { onEvent(LoginEvent.RegisterClicked) }) {
-            Text("Create Account")
+        TextButton(onClick = { onEvent(RegisterEvent.LoginClicked) }) {
+            Text("Sign In")
         }
     }
 }

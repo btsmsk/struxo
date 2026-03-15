@@ -25,9 +25,7 @@ class LoginViewModel(
             }
             is LoginEvent.LoginClicked -> login()
             is LoginEvent.RegisterClicked -> sendEffect(LoginEffect.NavigateToRegister)
-            is LoginEvent.ForgotPasswordClicked -> {
-                // Will be wired in a future step.
-            }
+            is LoginEvent.ForgotPasswordClicked -> sendEffect(LoginEffect.NavigateToForgotPassword)
         }
     }
 

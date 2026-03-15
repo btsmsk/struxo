@@ -51,6 +51,9 @@ sealed interface LoginEffect {
     /** Navigate to the registration screen. */
     data object NavigateToRegister : LoginEffect
 
+    /** Navigate to the forgot password screen. */
+    data object NavigateToForgotPassword : LoginEffect
+
     /** Show an error message (e.g. via Snackbar). */
     data class ShowError(val message: String) : LoginEffect
 }

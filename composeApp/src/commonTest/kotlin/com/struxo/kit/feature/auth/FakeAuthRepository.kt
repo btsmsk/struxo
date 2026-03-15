@@ -7,15 +7,23 @@ import com.struxo.kit.feature.auth.domain.repository.AuthRepository
 /**
  * Controllable fake for [AuthRepository] used in unit tests.
  *
- * Set [loginResult] before calling [login] to control the outcome.
+ * Set [loginResult] / [registerResult] before calling the corresponding method
+ * to control the outcome.
  */
 class FakeAuthRepository : AuthRepository {
 
     /** Pre-configured result returned by [login]. */
     var loginResult: Resource<AuthUser> = Resource.Success(TEST_USER)
 
+    /** Pre-configured result returned by [register]. */
+    var registerResult: Resource<AuthUser> = Resource.Success(TEST_USER)
+
     /** Tracks whether [logout] was called. */
     var loggedOut: Boolean = false
+        private set
+
+    /** Tracks the email passed to [resetPassword], or `null` if not called. */
+    var resetPasswordCalledWith: String? = null
         private set
 
     private var currentUser: AuthUser? = null
@@ -31,7 +39,14 @@ class FakeAuthRepository : AuthRepository {
         }
 
     override suspend fun register(email: String, password: String, name: String): AuthUser =
-        error("Not implemented in fake")
+        when (val result = registerResult) {
+            is Resource.Success -> {
+                currentUser = result.data
+                result.data
+            }
+            is Resource.Error -> throw (result.throwable ?: Exception(result.message))
+            is Resource.Loading -> error("Unexpected Loading state in FakeAuthRepository")
+        }
 
     override suspend fun logout() {
         loggedOut = true
@@ -41,6 +56,10 @@ class FakeAuthRepository : AuthRepository {
     override suspend fun getCurrentUser(): AuthUser? = currentUser
 
     override suspend fun isLoggedIn(): Boolean = currentUser != null
+
+    override suspend fun resetPassword(email: String) {
+        resetPasswordCalledWith = email
+    }
 
     companion object {
         val TEST_USER = AuthUser(

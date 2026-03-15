@@ -4,11 +4,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".StruxoApplication"
+        android:name="com.struxo.kit.StruxoApplication"
         android:allowBackup="true"
         android:label="Struxo"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.Struxo">
 
         <activity
             android:name="com.struxo.kit.MainActivity"

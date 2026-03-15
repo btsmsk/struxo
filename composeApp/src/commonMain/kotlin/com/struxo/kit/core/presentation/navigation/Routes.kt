@@ -9,3 +9,11 @@ data object LoginRoute
 /** Home screen route — post-authentication landing page. */
 @Serializable
 data object HomeRoute
+
+/** Registration screen route. */
+@Serializable
+data object RegisterRoute
+
+/** Forgot password screen route. */
+@Serializable
+data object ForgotPasswordRoute
