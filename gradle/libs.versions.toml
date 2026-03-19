@@ -1,22 +1,22 @@
 [versions]
 kotlin = "2.3.10"
-compose-multiplatform = "1.10.2"
+compose-multiplatform = "1.10.3"
 agp = "9.1.0"
-koin = "4.1.1"
+koin = "4.2.0"
 ktor = "3.4.1"
 room = "2.8.4"
 sqlite = "2.6.2"
-ksp = "2.3.5"
-kotlinx-serialization = "1.8.1"
+ksp = "2.3.6"
+kotlinx-serialization = "1.10.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 navigation = "2.9.2"
-lifecycle = "2.9.6"
+lifecycle = "2.10.0"
 coil = "3.4.0"
 napier = "2.7.1"
 turbine = "1.2.1"
 
-androidx-activity-compose = "1.10.1"
+androidx-activity-compose = "1.13.0"
 
 [libraries]
 # AndroidX
